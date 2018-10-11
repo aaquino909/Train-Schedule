@@ -25,11 +25,13 @@ $(document).ready(function () {
     // Don't refresh the page!
     event.preventDefault();
 
-
+    //stores input into variables
     name = $("#name-input").val().trim();
     dest = $("#dest-input").val().trim();
     time = $("#time-input").val().trim();
     freq = $("#freq-input").val().trim();
+
+    //CALCULATIONS 
     timeConverted = moment(time, "hh:mm").subtract(1, "years");
     currentTime = moment();
     diffTime = moment().diff(moment(timeConverted), "minutes");
@@ -39,7 +41,7 @@ $(document).ready(function () {
     nextArrival = moment(nextTrain).format("hh:mm");
 
 
-
+    //pushes input varibales into db 
     database.ref().push({ //set only replaces use .push
       name: name,
       dest: dest,
@@ -127,7 +129,7 @@ $(document).ready(function () {
     dataRef = firebase.database();
     $(this).closest('tbody').remove(); //removes row using the parent element
     getKey = $(this).parent().attr('id'); //captures the dateAdded ID thats in the opject
-    console.log(getKey);
+    // console.log(getKey);
     dataRef.ref().child(getKey).remove(); //removes database object thats related to the key
 
 
