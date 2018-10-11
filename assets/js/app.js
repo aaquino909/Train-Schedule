@@ -1,6 +1,7 @@
+
 $(document).ready(function () {
 
-  // Initialize Firebase
+  //Initialize Firebase
   var config = {
     apiKey: "AIzaSyDsG8NPyteR8sFGiTYcWxL1Eg9PSou5XCE",
     authDomain: "train-schedule-90c79.firebaseapp.com",
@@ -29,13 +30,13 @@ $(document).ready(function () {
     dest = $("#dest-input").val().trim();
     time = $("#time-input").val().trim();
     freq = $("#freq-input").val().trim();
-        timeConverted = moment(time, "hh:mm").subtract(1, "years");
-        currentTime = moment();
-        diffTime = moment().diff(moment(timeConverted), "minutes");
-        tRemainder = diffTime % freq;
-        minutesAway = freq - tRemainder;
-        nextTrain = moment().add(minutesAway, "minutes");
-        nextArrival = moment(nextTrain).format("hh:mm");
+    timeConverted = moment(time, "hh:mm").subtract(1, "years");
+    currentTime = moment();
+    diffTime = moment().diff(moment(timeConverted), "minutes");
+    tRemainder = diffTime % freq;
+    minutesAway = freq - tRemainder;
+    nextTrain = moment().add(minutesAway, "minutes");
+    nextArrival = moment(nextTrain).format("hh:mm");
 
 
 
@@ -62,27 +63,28 @@ $(document).ready(function () {
   database.ref().on("child_added", function (snapshot) {
     // storing the snapshot.val() in a variable for convenience
     var sv = snapshot.val();
-    console.log(sv);
-    // Console.loging the last user's data
-    console.log(sv.name);
-    console.log(sv.dest);
-    console.log(sv.time);
-    console.log(sv.freq);
-    console.log(sv.nextArrival);
-    console.log(sv.minutesAway);
+    // console.log(sv);
+    // // Console.loging the last user's data
+    // console.log(snapshot.key);
+    // console.log(sv.name);
+    // console.log(sv.dest);
+    // console.log(sv.time);
+    // console.log(sv.freq);
+    // console.log(sv.nextArrival);
+    // console.log(sv.minutesAway);
 
     // Change the HTML to reflect
     //assign a td to a variable//give it ID of namedisplay. append to table
     var tbody = $("<tbody>");
     tbody.addClass("tbody-display");
-    tbody.attr("id", sv.dateAdded);
+    tbody.attr("id", snapshot.key);
     $("#table").append(tbody);
-    var dateID =  $(tbody);
+    var dateID = $(tbody); //parent element 
 
     var nameDisplay = $("<td>");
     nameDisplay.addClass("name-display");
     nameDisplay.text(sv.name);
-    $(dateID).append(nameDisplay);
+    $(dateID).append(nameDisplay); //appended each element to the parent element so its easier to delete
 
     var destDisplay = $("<td>");
     destDisplay.addClass("dest-display");
@@ -120,16 +122,43 @@ $(document).ready(function () {
   }, function (errorObject) {
     console.log("Errors handled: " + errorObject.code);
   });
+  //deletes item and row from html and databse
+  $(document).on("click", "#delete", function () {
+    dataRef = firebase.database();
+    $(this).closest('tbody').remove(); //removes row using the parent element
+    getKey = $(this).parent().attr('id'); //captures the dateAdded ID thats in the opject
+    console.log(getKey);
+    dataRef.ref().child(getKey).remove(); //removes database object thats related to the key
 
-  $(document).on("click", "#delete", function(){
-    
-    console.log($(this).html());
-     $(this).closest('tbody').remove();
-     getKey = $(this).parent().attr('id');
-     console.log(getKey);
-     //use dateAdded ID to remove item from database
 
+  });
 });
 
-});
+//useful code
+// ref.child('users').orderByChild('name').equalTo('John Doe').on("value", function(snapshot) {
+//   console.log(snapshot.val());
+//   snapshot.forEach(function(data) {
+//       console.log(data.key);
+//   });
+// });
 
+// Find all dinosaurs whose height is exactly 25 meters.
+// var ref = firebase.database().ref("dinosaurs");
+// ref.orderByChild("height").equalTo(25).on("child_added", function(snapshot) {
+//   console.log(snapshot.key);
+// });
+
+    // // use dateAdded ID to remove item from database
+    // var ref = firebase.database().ref("train-schedule-90c79");
+    // ref.on("child_added", function(snapshot) {
+    //     console.log(snapshot.val());
+    //   });
+
+    // var root = database.ref();
+    // var urlRef = root.child("train-schedule-90c79");
+    // urlRef.once("value", function (snapshot) {
+    //   snapshot.forEach(function (child) {
+    //     console.log(child.key + ": " + child.val());
+    //   });
+
+    // });
